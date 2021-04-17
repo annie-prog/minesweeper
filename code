@@ -1,0 +1,321 @@
+#include <LiquidCrystal.h> //include the library code:
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);// initializes the library with the numbers of the interface pins
+
+int count; //initializes the count of mines around a button
+
+// mines
+int mine1;
+int mine2; 
+
+//current buttons
+int cbutton1;
+int cbutton2;
+int cbutton3;
+int cbutton4;
+int cbutton5;
+int cbutton6;
+
+// previous buttons
+int pbutton1;
+int pbutton2;
+int pbutton3;
+int pbutton4;
+int pbutton5;
+int pbutton6;
+
+void setup() 
+{
+  lcd.begin(16, 2); // set up the LCD's number of columns and rows:
+  Serial.begin(9600);// set up the project.
+  
+  randomSeed(analogRead(A0));
+  while(mine1 == mine2)
+  {
+    // making sure the mines are different
+    mine1 = random(6, 11);
+    mine2 = random(6, 11);
+  } 
+   //Comment in the debugging
+  Serial.println(mine1);
+  Serial.println(mine2);
+  
+  lcd.setCursor(0,0);
+  lcd.print("Starting game...");
+  for(int i=6; i<=10; i++) // set up the led lamps
+  {
+    pinMode(i, OUTPUT);
+  }
+  pinMode(13, OUTPUT);
+ 
+  for(int i = 1; i<=3; i++)// the  game starts in 3..2..1
+  {   
+  digitalWrite(6, HIGH);
+  digitalWrite(7, HIGH);
+  digitalWrite(8, HIGH);
+  digitalWrite(9, HIGH);
+  digitalWrite(10, HIGH);
+  digitalWrite(13, HIGH);
+  delay(500);
+  digitalWrite(6, LOW);
+  digitalWrite(7, LOW);
+  digitalWrite(8, LOW);
+  digitalWrite(9, LOW);
+  digitalWrite(10, LOW);
+  digitalWrite(13, LOW);
+  delay(500);  
+  }
+}
+
+void blink(int pin, int mine) //led lamps have to blink when there is a mine near the button
+{
+  for(int i = 1; i <= mine; i++)
+  {
+    digitalWrite(pin, HIGH);
+    delay(200);
+    digitalWrite(pin, LOW);
+    delay(200);
+  }
+}
+
+void lose(int button)//when we choose a mine, the game is over
+{
+  if(button == mine1 || button == mine2)
+  {
+    lcd.clear();
+    lcd.setCursor(0,0); // set the cursor to column 0, line 0
+    lcd.print("Game over!"); //print 'game over'
+    for(int i=6; i<=10; i++)
+    {
+      //all lamps are shining
+      digitalWrite(i, HIGH);
+      digitalWrite(13, HIGH);
+      delay(100);
+      //all lamps are not shining
+      digitalWrite(i, LOW);
+      digitalWrite(13, LOW);
+    }
+    delay(1000);
+    //the mines are shining
+    digitalWrite(mine1, HIGH);
+    digitalWrite(mine2, HIGH); 
+    delay(1000);
+    //the mines are not shining anymore
+    digitalWrite(mine1, LOW);
+    digitalWrite(mine2, LOW);
+  }
+}
+
+void loop()
+{  
+  lcd.setCursor(0, 1); // set the cursor to column 0, line 1
+  //initialize all buttons
+  cbutton1 = digitalRead(6);
+  cbutton2 = digitalRead(A1);
+  cbutton3 = digitalRead(A2);
+  cbutton4 = digitalRead(A3);
+  cbutton5 = digitalRead(A4);
+  cbutton6 = digitalRead(A5);
+  
+  if(cbutton1 == HIGH && 6 != mine1 && 6 != mine2)
+  {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("It's not a mine");
+  }
+  if(cbutton2 == HIGH && 7 != mine1 && 7 != mine2)
+  {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("It's not a mine");
+  }
+  if(cbutton3 == HIGH && 8 != mine1 && 8 != mine2)
+  {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("It's not a mine");
+  }
+  if(cbutton4 == HIGH && 9 != mine1 && 9 != mine2)
+  {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("It's not a mine");
+  }
+  if(cbutton5 == HIGH && 10 != mine1 && 10 != mine2)
+  {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("It's not a mine");
+  }
+  if(cbutton6 == HIGH && 13 != mine1 && 13 != mine2)
+  {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("It's not a mine");
+  }  
+  
+  // count the number of mines around a button
+  count = 0; 
+  if(cbutton1 == HIGH && cbutton1 != pbutton1)
+  {
+    lose(6);
+    
+    if(7 == mine1 || 7 == mine2)
+    {
+      count += 1;
+    }
+    if(8 == mine1 || 8 == mine2)  
+    {
+      count += 1;
+    }
+    if(9 == mine1 || 9 == mine2)
+    {
+      count += 1;
+    }
+    
+    if(6 != mine1 && 6 != mine2)
+    {
+      lcd.setCursor(0,1);
+      lcd.print(count);
+      blink(6, count);
+    }
+  }
+  else if(cbutton2 == HIGH && cbutton2 != pbutton2)
+  {  
+    lose(7);
+    
+    if(6 == mine1 || 6 == mine2)
+    {
+      count += 1;
+    }
+     if(8 == mine1 || 8 == mine2)
+    {
+      count += 1;
+    }
+     if(9 == mine1 || 9 == mine2)
+    {
+      count += 1;
+    }
+    if(7 != mine1 && 7 != mine2)
+    {
+      lcd.setCursor(0,1);
+      lcd.print(count);
+      blink(7, count);
+    }
+  }
+  else if(cbutton3 == HIGH && cbutton3 != pbutton3)
+  {
+    lose(8);
+    
+    if(6 == mine1 || 6 == mine2)
+    {
+      count += 1;
+    }
+    if(7 == mine1 || 7 == mine2)
+    {
+      count += 1;
+    }
+    if(9 == mine1 || 9 == mine2)
+    {
+      count += 1;
+    }
+    if(10 == mine1 || 10 == mine2)
+    {
+      count += 1;
+    }
+    if(13 == mine1 || 13 == mine2)
+    {
+      count += 1;
+    }
+   
+    if(8 != mine1 && 8 != mine2)
+    {
+      lcd.setCursor(0,1);
+      lcd.print(count);
+      blink(8, count);
+    }
+  }
+  else if(cbutton4 == HIGH && cbutton4 != pbutton4)
+  {
+    lose(9);
+    
+    if(6 == mine1 || 6 == mine2)
+    {
+      count += 1;
+    }
+    if(7 == mine1 || 7 == mine2)
+    {
+      count += 1;
+    }
+    if(8 == mine1 || 8 == mine2)
+    {
+      count += 1;
+    }
+    if(10 == mine1 || 10 == mine2)
+    {
+      count += 1;
+    }
+    if(13 == mine1 || 13 == mine2)
+    {
+      count += 1;
+    }
+    if(9 != mine1 && 9 != mine2)
+    {
+      lcd.setCursor(0,1);
+      lcd.print(count);
+      blink(9, count);
+    }
+  }
+  else if(cbutton5 == HIGH && cbutton5 != pbutton5)
+  {
+    lose(10);
+    
+    if(8 == mine1 || 8 == mine2)
+    {
+      count += 1;
+    }
+    if(9 == mine1 || 9 == mine2)
+    {
+      count += 1;
+    }
+    if(13 == mine1 || 13 == mine2)
+    {
+      count += 1;
+    }
+    if(10 != mine1 && 10 != mine2)
+    {
+      lcd.setCursor(0,1);
+      lcd.print(count);
+      blink(10, count);
+    }
+  }
+  else if(cbutton6 == HIGH && cbutton6 != pbutton6)
+  {   
+    lose(13);
+    
+    if(8 == mine1 || 8 == mine2)
+    {
+      count += 1;
+    }
+    if(9 == mine1 || 9 == mine2)
+    {
+      count += 1;
+    }
+    if(10 == mine1 || 10 == mine2)
+    {
+      count += 1;
+    }
+    if(13 != mine1 && 13 != mine2)
+    {
+      lcd.setCursor(0,1);
+      lcd.print(count);
+      blink(13, count);
+    }
+  }
+  //replace new buttons with the old ones, so that the lamps won't light forever
+  pbutton1 = cbutton1;
+  pbutton2 = cbutton2;
+  pbutton3 = cbutton3;
+  pbutton4 = cbutton4;
+  pbutton5 = cbutton5;
+  pbutton6 = cbutton6;
+}
